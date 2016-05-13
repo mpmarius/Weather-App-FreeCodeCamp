@@ -98,14 +98,15 @@ function changeTemp (temp, unit){
 function weatherData(forecast) {
     'use strict';
     var forecastIcons = new Skycons({'color': 'gray'});
-    var temp = (Math.floor(forecast.currently.temperature));
+    var tempF = (Math.floor(forecast.currently.temperature));
+    var tempC = (tempF - 32 ) / 1.8;
     $city.attr('placeholder', forecast.name); //city
     $main.text(forecast.currently.summary); // Weather Description
     weatherIcon = forecast.currently.icon;
     forecastIcons.set('weather_icon', weatherIcon);
     forecastIcons.play();
-    changeTemp(temp, 'F');
-    changeBgColor(temp);
+    changeTemp(tempC, 'C');
+    changeBgColor(tempC);
 }
 // change temperature metric-imperial
 function setMetrics(){
