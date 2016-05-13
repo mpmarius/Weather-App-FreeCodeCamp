@@ -1,0 +1,14 @@
+{
+  "name": "test",
+  "private": true,
+  "dependencies": {
+    "modernizr": "~2.8.1",
+    "Materialize": "materialize#^0.97.6",
+    "skycons": "*"
+  },
+  "overrides": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  }
+}
