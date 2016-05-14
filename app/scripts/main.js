@@ -1,10 +1,5 @@
-/* eslint-disable */
-var appId = 'f5b8cf8a44d1f85331b87e9f7b361caf/',
-    apiUrl = 'https://api.forecast.io/forecast/',
-    longitude = '',
+var longitude = '',
     latitude = '',
-    $unit = $('#unit'),
-    $main = $('#main'),
     $temp = $('#temp'),
     weatherIcon,
     $city = $('#city'),
@@ -18,6 +13,8 @@ var appId = 'f5b8cf8a44d1f85331b87e9f7b361caf/',
 
 function getWeather() {
     'use strict';
+    var appId = 'f5b8cf8a44d1f85331b87e9f7b361caf/',
+        apiUrl = 'https://api.forecast.io/forecast/';
     $.ajax({
         url: apiUrl + appId + latitude + ',' + longitude,
         dataType: 'jsonp',
@@ -31,33 +28,33 @@ function getWeather() {
 
 //get city name from google because forecast.io does not provide city name
 
-function getCityName(){
+function getCityName() {
     'use strict';
     var keyGoogle = 'AIzaSyBmCk28nEs1OWXgwS0VQ1752o_cYwrkxHs',
         url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=',
         location = latitude + ',' + longitude;
 
     $.ajax({
-        url: url + location,
-        type: 'GET',
-        dataType: 'json',
-        data: {
-            location_type: 'GEOMETRIC_CENTER',
-            key: keyGoogle
-        }
-    })
-    .done(function(googleResponse) {
-        console.log(googleResponse);
-        $city.text(googleResponse.results[0].formatted_address);
-    })
-    .fail(function(googleResponse) {
-        console.log(googleResponse);
-        Materialize.toast('Cannot get City Name from google', 600);
-    });
+            url: url + location,
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                location_type: 'GEOMETRIC_CENTER',
+                key: keyGoogle
+            }
+        })
+        .done(function(googleResponse) {
+            console.log(googleResponse);
+            $city.text(googleResponse.results[0].formatted_address);
+        })
+        .fail(function(googleResponse) {
+            console.log(googleResponse);
+            Materialize.toast('Cannot get City Name from google', 600);
+        });
 }
 
 //get browser location && initialize GetWeather Api
-function coordsSucces(pos) {
+function coordsSuccess(pos) {
     'use strict';
     var crd = pos.coords;
     latitude = crd.latitude;
@@ -73,21 +70,22 @@ function coordsError(err) {
 }
 
 //Increments Temperature value
-function changeTemp (temp, unit){
+function changeTemp(temp, unit) {
     'use strict';
-    var count = parseInt($temp.text());
+    var count = parseInt($temp.text()),
+        $unit = $('#unit');
     $unit.text(unit);
-    if (count < temp){
-        var interval = setInterval(function(){
-                $temp.text(count++);
-                if (count === temp){
-                    clearInterval(interval);
-                }
+    if (count < temp) {
+        var interval = setInterval(function() {
+            $temp.text(count++);
+            if (count === temp) {
+                clearInterval(interval);
+            }
         }, 30);
-    }else {
-        var interval = setInterval(function(){
+    } else {
+        var interval = setInterval(function() {
             $temp.text(count--);
-            if (count === temp){
+            if (count === temp) {
                 clearInterval(interval);
             }
         }, 30);
@@ -97,26 +95,29 @@ function changeTemp (temp, unit){
 //forecast function process the data//
 function weatherData(forecast) {
     'use strict';
-    var forecastIcons = new Skycons({'color': 'gray'});
+    var $main = $('#main');
+
+    console.log(forecast);
+    var forecastIcons = new Skycons({ 'color': 'gray' });
     var tempF = (Math.floor(forecast.currently.temperature));
-    var tempC = (tempF - 32 ) / 1.8;
-    $city.attr('placeholder', forecast.name); //city
+    var tempC = Math.floor((tempF - 32) / 1.8);
     $main.text(forecast.currently.summary); // Weather Description
     weatherIcon = forecast.currently.icon;
     forecastIcons.set('weather_icon', weatherIcon);
     forecastIcons.play();
     changeTemp(tempC, 'C');
     changeBgColor(tempC);
+    changeWeatherImage(weatherIcon);
 }
 // change temperature metric-imperial
-function setMetrics(){
+function setMetrics() {
     'use strict';
-    if ($('#metrics').is(':checked')){
+    if ($('#metrics').is(':checked')) {
         var count = parseInt($temp.text()),
             tempF = Math.floor(count * 1.8 + 32);
-       changeTemp(tempF, 'F');
+        changeTemp(tempF, 'F');
 
-    }else {
+    } else {
         var count = parseInt($temp.text()),
             tempC = Math.floor((count - 32) / 1.8);
         changeTemp(tempC, 'C');
@@ -125,19 +126,37 @@ function setMetrics(){
 
 //change bg color based on temperature
 
-function changeBgColor(temp){
+function changeBgColor(temp) {
     'use strict';
     var position = temp * 2.5;
-    if (position < 0 ) {
+    if (position < 0) {
         position = 0;
-    }else if (position > 100 ) {
+    } else if (position > 100) {
         position = 100;
     }
     $('body').css('background-position', position + '%');
 }
 
-$(document).ready(function () {
+// Change Weather image
+
+function changeWeatherImage(icon) {
+    var image = {
+        clear_night: 'clear-night',
+        clear_day: 'clear-day',
+        cloudy: ['partly-cloudy-day', 'partly-cloudy-night', 'fog', 'cloudy', 'wind'],
+        snow: ['snow', 'sleet'],
+        rain: ['rain', 'drizzle']
+    };
+    $.map(image, function(value, key) {
+        if (value === icon || key.indexOf(icon) !== -1) {
+            $('.weather-image').css('background-image', 'url(\'../images/' + key + '.jpg\')');
+        }
+    });
+
+}
+
+$(document).ready(function() {
     'use strict';
-    navigator.geolocation.getCurrentPosition(coordsSucces, coordsError, options);
+    navigator.geolocation.getCurrentPosition(coordsSuccess, coordsError, options);
     $('#metrics').on('change', setMetrics);
 });
