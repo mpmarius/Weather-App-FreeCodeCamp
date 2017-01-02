@@ -21,7 +21,6 @@ function getWeather() {
         jsonpCallback: 'weatherData',
         type: 'GET'
     }).fail(function Error() {
-        console.log('error');
         alert('cannot connect to weather API');
     });
 }
@@ -39,16 +38,14 @@ function getCityName() {
             type: 'GET',
             dataType: 'json',
             data: {
-                location_type: 'GEOMETRIC_CENTER',
+                //location_type: 'GEOMETRIC_CENTER',
                 key: keyGoogle
             }
         })
         .done(function(googleResponse) {
-            console.log(googleResponse);
             $city.text(googleResponse.results[0].formatted_address);
         })
         .fail(function(googleResponse) {
-            console.log(googleResponse);
             Materialize.toast('Cannot get City Name from google', 600);
         });
 }
@@ -59,7 +56,6 @@ function coordsSuccess(pos) {
     var crd = pos.coords;
     latitude = crd.latitude;
     longitude = crd.longitude;
-    console.log(latitude + ' ' + longitude);
     getWeather();
     getCityName();
 }
@@ -97,7 +93,6 @@ function weatherData(forecast) {
     'use strict';
     var $main = $('#main');
 
-    console.log(forecast);
     var forecastIcons = new Skycons({ 'color': 'gray' });
     var tempF = (Math.floor(forecast.currently.temperature));
     var tempC = Math.floor((tempF - 32) / 1.8);

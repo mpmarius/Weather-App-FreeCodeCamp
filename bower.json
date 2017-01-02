@@ -3,8 +3,7 @@
   "private": true,
   "dependencies": {
     "modernizr": "~2.8.1",
-    "Materialize": "materialize#^0.97.6",
-    "skycons": "*"
+    "Materialize": "materialize#^0.97.6"
   },
   "overrides": {},
   "devDependencies": {
